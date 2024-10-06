@@ -4,7 +4,7 @@ import requests
 from requests import RequestException
 
 from alist_v3.exceptions import AlistV3Exception
-from alist_v3.models import Result
+from alist_v3.models.rest_models import Result
 from alist_v3.rest_adapter import RestAdapter
 
 class TestRestAdapter(TestCase):

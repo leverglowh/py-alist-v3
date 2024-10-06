@@ -5,7 +5,7 @@ from typing import Dict
 from json import JSONDecodeError
 
 from alist_v3.exceptions import AlistV3Exception
-from alist_v3.models import Result
+from alist_v3.models.rest_models import Result
 
 class RestAdapter:
     def __init__(self, domain: str = 'http://localhost:5244/', token: str = '', ssl_verify: bool = True, logger: logging.Logger = None):

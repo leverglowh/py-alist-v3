@@ -32,7 +32,6 @@ class RestAdapter:
                 self._logger.error(f"Could not ping alist at {response.url}")
                 raise AlistV3Exception("Ping failed")
             else:
-                print(response.text)
                 return response.text == 'pong'
         except requests.exceptions.RequestException as e:
             self._logger.error(msg=(str(e)))

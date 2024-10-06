@@ -24,6 +24,20 @@ class RestAdapter:
             # noinspection PyUnresolvedReferences
             requests.packages.urllib3.disable_warnings()
 
+    def ping(self) -> bool:
+        try:
+            self._logger.debug(msg=f"Pinging alist at {self.url}")
+            response = requests.request(method='GET', url=self.url + 'ping', verify=self._ssl_verify)
+            if response.status_code != 200:
+                self._logger.error(f"Could not ping alist at {response.url}")
+                raise AlistV3Exception("Ping failed")
+            else:
+                print(response.text)
+                return response.text == 'pong'
+        except requests.exceptions.RequestException as e:
+            self._logger.error(msg=(str(e)))
+            raise AlistV3Exception(f"Cannot complete ping request") from e
+
     def get(self, path: str, endpoint: str, ep_params: Dict = None) -> Result:
         """
         Sends get request

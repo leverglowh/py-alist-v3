@@ -15,6 +15,27 @@ class TestRestAdapter(TestCase):
         self.ko199_response_content = json.dumps({'code': 199, 'message': 'ko199', 'data': None}).encode()
         self.ko400_response_content = json.dumps({'code': 400, 'message': 'ko400', 'data': None}).encode()
 
+    def test_ping_ok(self):
+        self.response.status_code = 200
+        self.response._content = "pong".encode()
+        with mock.patch("requests.request", return_value=self.response):
+            result = self.rest_adapter.ping()
+            self.assertTrue(result)
+
+    def test_ping_not_pong_ko(self):
+        self.response.status_code = 200
+        self.response._content = "not_pong".encode()
+        with mock.patch("requests.request", return_value=self.response):
+            result = self.rest_adapter.ping()
+            self.assertTrue(not result)
+
+    def test_ping_ko(self):
+        self.response.status_code = 404
+        self.response._content = "anything".encode()
+        with mock.patch("requests.request", return_value=self.response):
+            with self.assertRaises(AlistV3Exception):
+                self.rest_adapter.ping()
+
     def test__do_good_request_returns_result(self):
         self.response.status_code = 200
         self.response._content = self.ok_response_content

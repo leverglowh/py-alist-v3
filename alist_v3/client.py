@@ -22,9 +22,16 @@ class Client:
         self.fs = None
         self.admin = None
 
-    def login(self, username, password):
-        """Login and initialize all authenticated modules."""
-        self.token = self.auth.login(username, password)
+    def login(self, username, password, is_hashed=True):
+        """
+        Logins and initializes authentication bound modules.
+        Note: not hashed login generated token expires in 48 hours.
+        :param username: the username to be logged in
+        :param password: plain password for the user
+        :param is_hashed: whether to call hash endpoint
+        :return: None
+        """
+        self.token = self.auth.login(username, password, is_hashed)
         self.fs = FileSystem(self.domain, self.token)
         self.admin = Admin(self.domain, self.token)
 

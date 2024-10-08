@@ -25,6 +25,8 @@ class TestClientInit(TestCase):
 class TestClient(TestCase):
     @patch.object(Public, 'ping', return_value=True)
     def setUp(self, _):
+        self.username = "username"
+        self.pwd = "password"
         self.mock_auth = MagicMock(spec=Auth)
         self.mock_public = MagicMock(spec=Public)
 
@@ -39,14 +41,19 @@ class TestClient(TestCase):
         self.assertIsInstance(self.client.public, Public)
         self.assertIsInstance(self.client.auth, Auth)
 
+    def test_not_hashed_auth_login(self):
+        self.client.login(self.username, self.pwd, False)
+        self.mock_auth.login.assert_called_once_with(self.username, self.pwd, False)
+
+    def test_default_auth_login(self):
+        self.client.login(self.username, self.pwd)
+        self.mock_auth.login.assert_called_once_with(self.username, self.pwd, True)
+
     def test_login_ok(self):
-        user = "username"
-        pwd = "password"
         mock_token = "fake_token"
         self.mock_auth.login.return_value = mock_token
 
-        self.client.login(user, pwd)
-        self.mock_auth.login.assert_called_with(user, pwd)
+        self.client.login(self.username, self.pwd)
 
         self.assertEqual(self.client.token, mock_token)
         self.assertIsNotNone(self.client.token)
@@ -62,7 +69,7 @@ class TestClient(TestCase):
     def test_login_fail(self):
         self.mock_auth.login.side_effect = AlistV3Exception('some other error')
         with self.assertRaises(AlistV3Exception):
-            self.client.login('some', 'credentials')
+            self.client.login(self.username, self.pwd)
 
     def test_logout_(self):
         self.client.logout()

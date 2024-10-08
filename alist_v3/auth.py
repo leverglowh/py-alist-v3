@@ -1,5 +1,5 @@
 from alist_v3.exceptions import AlistV3Exception
-from alist_v3.models.auth_models import TokenResponse
+from alist_v3.models.auth_models import TokenResponse, MFATokenResponse
 from alist_v3.rest_adapter import RestAdapter
 from hashlib import sha256
 
@@ -21,6 +21,19 @@ class Auth:
         try:
             token_response = TokenResponse(**response.data)
             token = token_response.token
+            self._rest_adapter.token = token
             return token
         except (TypeError, AlistV3Exception) as e:
             raise AlistV3Exception from e
+
+    def logout(self):
+        self._rest_adapter.token = None
+
+    def generate_2fa_token(self) -> MFATokenResponse:
+        try:
+            response = self._rest_adapter.post(path=self.path, endpoint='2fa/generate')
+            mfa_response = MFATokenResponse(**response.data)
+            return mfa_response
+        except Exception as e:
+            raise AlistV3Exception from e
+

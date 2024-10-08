@@ -2,6 +2,11 @@ class TokenResponse:
     def __init__(self, token):
         self.token = token
 
+class MFATokenResponse:
+    def __init__(self, qr: str, secret: str):
+        self.qr = qr
+        self.secret = secret
+
 class User:
     id: int
     username: str
